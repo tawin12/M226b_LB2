@@ -1,8 +1,9 @@
-# M226b_LB2
+# M226b LB2: AngularTetris
+
 Components: board, start
 
-# board
+## board
 Spielfeld auf dem Tetris Statt findet
 
-# start
+## start
 Home Bildschrim um das Spiel zu starten
