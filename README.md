@@ -2,7 +2,7 @@
 Components: board, start
 
 # board
-Spielfeld auf dem Tetris Statt findet
+Spielfeld
 
 # start
-Home Bildschrim um das Spiel zu starten
+Home-Bildschrim um das Spiel zu starten
