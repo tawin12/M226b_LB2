@@ -1,0 +1,17 @@
+.grid {
+
+    margin-top: 5%;
+
+}
+
+.app-board {
+    border-style: solid;
+    margin-left: 35%;
+}
+
+.right-column {
+
+    float: right;
+    margin-right: 35%;
+
+}
