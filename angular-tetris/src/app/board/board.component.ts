@@ -1,5 +1,5 @@
 import { Component, ViewChild, ElementRef, OnInit, HostListener} from '@angular/core';
-import { COLS, BLOCK_SIZE, ROWS } from './constants';
+import { COLS, BLOCK_SIZE, ROWS, KEYS, FARBEN, FORMEN } from './constants';
 import { Piece, IPiece } from './tetromis.component';
 
 @Component({
@@ -18,6 +18,28 @@ export class BoardComponent implements OnInit {
     level: number;
     board: number[][];
     piece: Piece;
+
+    moves = {
+      [KEYS.LEFT]:  (p: IPiece): IPiece => ({ ...p, x: p.x - 1 }),
+      [KEYS.RIGHT]: (p: IPiece): IPiece => ({ ...p, x: p.x + 1 }),
+      [KEYS.UP]:    (p: IPiece): IPiece => ({ ...p, y: p.y + 1 })
+    };
+
+    @HostListener('window:keydown', ['$event'])
+    keyEvent(event: KeyboardEvent) {
+      if (this.moves[event.keyCode]) {
+        // If the keyCode exists in our moves stop the event from bubbling.
+        event.preventDefault();
+        // Get the next state of the piece.
+        var p = this.moves[event.keyCode](this.piece);
+        // Move the piece
+        this.piece.move(p);
+        // Clear the old position before drawing
+        this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+        // Draw the new position.
+        this.piece.draw();
+      }
+    }
 
     ngOnInit() {
 
