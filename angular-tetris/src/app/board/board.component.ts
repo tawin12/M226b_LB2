@@ -1,5 +1,6 @@
-import { Component, ViewChild, ElementRef, OnInit } from '@angular/core';
+import { Component, ViewChild, ElementRef, OnInit, HostListener} from '@angular/core';
 import { COLS, BLOCK_SIZE, ROWS } from './constants';
+import { Piece, IPiece } from './tetromis.component';
 
 @Component({
   selector: 'app-board',
@@ -8,40 +9,49 @@ import { COLS, BLOCK_SIZE, ROWS } from './constants';
 })
 export class BoardComponent implements OnInit {
 
-  constructor() { }
+    @ViewChild('board', { static: true })
+    canvas: ElementRef<HTMLCanvasElement>;
 
-  @ViewChild('board', { static: true })
-  canvas: ElementRef<HTMLCanvasElement>;
+    ctx: CanvasRenderingContext2D;
+    points: number;
+    lines: number;
+    level: number;
+    board: number[][];
+    piece: Piece;
 
-  ctx: CanvasRenderingContext2D;
-  points: number;
-  lines: number;
-  level: number;
+    ngOnInit() {
 
-  ngOnInit() {
+      this.initBoard();
 
-    this.initBoard();
+    }
 
-  }
+    //Initialisiert das Board
+    initBoard() {
+      this.ctx = this.canvas.nativeElement.getContext('2d');
+      this.ctx.canvas.width = COLS * BLOCK_SIZE;
+      this.ctx.canvas.height = ROWS * BLOCK_SIZE;
 
-  getEmptyBoard(): number[][] {
-    return Array.from({ length: ROWS }, () => Array(COLS).fill(0));
-  }
+      //Skaliert die alle Objekte
+      this.ctx.scale(BLOCK_SIZE, BLOCK_SIZE)
+    }
 
-  initBoard() {
-    // Get the 2D context that we draw on.
-    this.ctx = this.canvas.nativeElement.getContext('2d');
+    //Setzt das Board zurück und erstellt die Matrix
+    getEmptyBoard(): number[][] {
+      return Array.from({ length: ROWS }, () => Array(COLS).fill(0));
+    }
 
-    // Calculate size of canvas from constants.
-    this.ctx.canvas.width = COLS * BLOCK_SIZE;
-    this.ctx.canvas.height = ROWS * BLOCK_SIZE;
-  }
+    //Button um das spiel zu starten
+    play() {
 
-  play() {
+      //Ruft das Board auf
+      this.board = this.getEmptyBoard();
+      console.table(this.board);
 
-    console.table(this.getEmptyBoard);
+      //Ruft das Formen objekt auf
+      this.piece = new Piece(this.ctx);
+      this.piece.draw();
 
-  }
+    }
 
 
 }
