@@ -29,3 +29,5 @@ export class KEYS {
     static readonly RIGHT = 39;
     static readonly DOWN = 40;
   }
+
+  export const POINTS = 0;

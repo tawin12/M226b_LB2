@@ -25,6 +25,9 @@ export class BoardComponent implements OnInit {
       [KEYS.UP]:    (p: IPiece): IPiece => ({ ...p, y: p.y + 1 })
     };
 
+      
+
+
     @HostListener('window:keydown', ['$event'])
     keyEvent(event: KeyboardEvent) {
       // keyCode registrieren
@@ -56,13 +59,13 @@ export class BoardComponent implements OnInit {
       this.ctx.scale(BLOCK_SIZE, BLOCK_SIZE)
     }
 
-    //Setzt das Board zurück und erstellt die Matrix
     getEmptyBoard(): number[][] {
       return Array.from({ length: ROWS }, () => Array(COLS).fill(0));
     }
 
     //Button um das spiel zu starten
     play() {
+
 
       //Ruft das Board auf
       this.board = this.getEmptyBoard();
