@@ -69,11 +69,8 @@ export class BoardComponent implements OnInit {
 
 
     animate(now = 0) {
-      // Update elapsed time.
       this.time.elapsed = now - this.time.start;
-      // If elapsed time has passed time for current level
       if (this.time.elapsed > this.time.level) {
-        // Reset start time
         this.time.start = now;
         //this.drop();
       }
