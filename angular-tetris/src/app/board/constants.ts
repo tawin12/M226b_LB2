@@ -21,6 +21,7 @@ export const FARBEN = [
 export const COLS = 10;
 export const ROWS = 20;
 export const BLOCK_SIZE = 30;
+
 export class KEYS {
     static readonly ESC = 27;
     static readonly SPACE = 32;
@@ -30,4 +31,11 @@ export class KEYS {
     static readonly DOWN = 40;
   }
 
-  export const POINTS = 0;
+  export class POINTS {
+    static readonly SINGLE = 100;
+    static readonly DOUBLE = 300;
+    static readonly TRIPLE = 500;
+    static readonly TETRIS = 800;
+    static readonly SOFT_DROP = 1;
+    static readonly HARD_DROP = 2;
+  }
