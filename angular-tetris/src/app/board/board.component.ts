@@ -27,16 +27,15 @@ export class BoardComponent implements OnInit {
 
     @HostListener('window:keydown', ['$event'])
     keyEvent(event: KeyboardEvent) {
+      // keyCode registrieren
       if (this.moves[event.keyCode]) {
-        // If the keyCode exists in our moves stop the event from bubbling.
         event.preventDefault();
-        // Get the next state of the piece.
         var p = this.moves[event.keyCode](this.piece);
-        // Move the piece
+        // tetromis bewegen
         this.piece.move(p);
-        // Clear the old position before drawing
+        // Alte Position löschen
         this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
-        // Draw the new position.
+        // Neue Position
         this.piece.draw();
       }
     }
