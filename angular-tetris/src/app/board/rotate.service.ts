@@ -1,14 +1,15 @@
 import { Injectable } from '@angular/core';
-import { IPiece } from './tetromis.component';
-import { COLS, ROWS, POINTS } from './constants';
+import { ITetromino } from './tetromis.component';
+import { COLS, ROWS, PUNKTE } from './constants';
 
 @Injectable({
     providedIn: 'root'
   })
+  //klasse ermöglicht als Service, dass Rotieren der Blöcke.
   export class TetromisRotation {
 
-    rotate(piece: IPiece): IPiece {
-        let p: IPiece = JSON.parse(JSON.stringify(piece));
+    rotate(piece: ITetromino): ITetromino {
+        let p: ITetromino = JSON.parse(JSON.stringify(piece));
         for (let y = 0; y < p.shape.length; ++y) {
         for (let x = 0; x < y; ++x) {
             [p.shape[x][y], p.shape[y][x]] = [p.shape[y][x], p.shape[x][y]];

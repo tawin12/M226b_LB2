@@ -1,148 +1,241 @@
 import { Component, ViewChild, ElementRef, OnInit, HostListener} from '@angular/core';
-import { COLS, BLOCK_SIZE, ROWS, KEYS, FARBEN, FORMEN } from './constants';
-import { Piece, IPiece } from './tetromis.component';
+import { COLS, BLOCK_SIZE, ROWS, KEYS, FARBEN, FORMEN, PUNKTE, LEVEL, LINES_PER_LEVEL } from './constants';
+import { Tetromino, ITetromino } from './tetromis.component';
 import {IsOnEdge} from './edge.service';
 import {TetromisRotation} from './rotate.service';
 
+/**
+ *
+ *
+ * @export
+ * @class BoardComponent
+ * @implements {OnInit}
+ */
 @Component({
   selector: 'app-board',
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.css']
 })
 export class BoardComponent implements OnInit {
+  @ViewChild('board', { static: true })
+  canvas: ElementRef<HTMLCanvasElement>;
+  @ViewChild('next', { static: true })
+  canvasNext: ElementRef<HTMLCanvasElement>;
+  ctx: CanvasRenderingContext2D;
+  ctxNext: CanvasRenderingContext2D;
+  board: number[][];
+  piece: Tetromino;
+  next: Tetromino;
+  requestId: number;
+  paused: boolean;
+  gameStarted: boolean;
+  time: { start: number; elapsed: number; level: number };
+  points: number;
+  highScore: number;
+  lines: number;
+  level: number;
+  moves = {
+    [KEYS.LEFT]: (p: ITetromino): ITetromino => ({ ...p, x: p.x - 1 }),
+    [KEYS.RIGHT]: (p: ITetromino): ITetromino => ({ ...p, x: p.x + 1 }),
+    [KEYS.DOWN]: (p: ITetromino): ITetromino => ({ ...p, y: p.y + 1 }),
+    [KEYS.SPACE]: (p: ITetromino): ITetromino => ({ ...p, y: p.y + 1 }),
+    [KEYS.UP]: (p: ITetromino): ITetromino => this.rotate.rotate(p)
+  };
 
-    @ViewChild('board', { static: true })
-    canvas: ElementRef<HTMLCanvasElement>;
-
-    ctx: CanvasRenderingContext2D;
-    points: number;
-    lines: number;
-    level: number;
-    board: number[][];
-    piece: Piece;
-
-    moves = {
-      [KEYS.LEFT]:  (p: IPiece): IPiece => ({ ...p, x: p.x - 1 }),
-      [KEYS.RIGHT]: (p: IPiece): IPiece => ({ ...p, x: p.x + 1 }),
-      [KEYS.UP]:    (p: IPiece): IPiece => ({ ...p, y: p.y + 1 }),
-      [KEYS.SPACE]: (p: IPiece): IPiece => ({ ...p, y: p.y + 1 }),
-      [KEYS.UP]: (p: IPiece): IPiece => this.rotate.rotate(p)
-    };
-
-    time = { start: 0, elapsed: 0, level: 1000 };
-
-
-    @HostListener('window:keydown', ['$event'])
-    keyEvent(event: KeyboardEvent) {
-      // keyCode registrieren
-      if (this.moves[event.keyCode]) {
-        event.preventDefault();
-        var p = this.moves[event.keyCode](this.piece);
-        // tetromis bewegen
-
-        if (this.edge.valid(p, this.board)) {
+  /**
+   *
+   *
+   * @param {KeyboardEvent} event
+   * @memberof BoardComponent
+   */
+  @HostListener('window:keydown', ['$event'])
+  keyEvent(event: KeyboardEvent) {
+    if (event.keyCode === KEYS.ESC) {
+      this.gameOver();
+    } else if (this.moves[event.keyCode]) {
+      event.preventDefault();
+      // Get new state
+      let p = this.moves[event.keyCode](this.piece);
+      if (event.keyCode === KEYS.SPACE) {
+        // Hard drop
+        while (this.edge.valid(p, this.board)) {
+          this.points += PUNKTE.HARD_DROP;
           this.piece.move(p);
+          p = this.moves[KEYS.DOWN](this.piece);
         }
-
-        if (event.keyCode === KEYS.SPACE) {
-          while (this.edge.valid(p, this.board)) {
-            p = this.moves[KEYS.DOWN](this.piece);
-            this.piece.move(p);
-          }
-        }
-
-        // Alte Position löschen
-        this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
-        // Neue Position
-        //this.piece.draw();
-      }
-    }
-
-    constructor(private edge: IsOnEdge, private rotate: TetromisRotation) {}
-
-    ngOnInit() {
-
-      this.initBoard();
-
-    }
-    
-
-
-    animate(now = 0) {
-      this.time.elapsed = now - this.time.start;
-      if (this.time.elapsed > this.time.level) {
-        this.time.start = now;
-        //this.drop();
-      }
-      this.draw();
-      requestAnimationFrame(this.animate.bind(this));
-    }
-
-    drop(): boolean {
-      let p = this.moves[KEYS.DOWN](this.piece);
-      if (this.edge.valid(p, this.board)) {
+      } else if (this.edge.valid(p, this.board)) {
         this.piece.move(p);
-      } else {
-        //this.freeze();
-        //this.clearLines();
-        if (this.piece.y === 0) {
-          // Game over
-          return false;
+        if (event.keyCode === KEYS.DOWN) {
+          this.points += PUNKTE.SOFT_DROP;
         }
-        //this.piece = this.next;
-        //this.next = new Piece(this.ctx);
-        //this.next.drawNext(this.ctxNext);
       }
-      return true;
+    }
+  }
+
+  /**
+   *Creates an instance of BoardComponent.
+   * @param {IsOnEdge} edge
+   * @param {TetromisRotation} rotate
+   * @memberof BoardComponent
+   */
+  constructor(private edge: IsOnEdge, private rotate: TetromisRotation) {}
+
+  /**
+   *
+   *
+   * @memberof BoardComponent
+   */
+  ngOnInit() {
+    this.initBoard();
+    this.initNext();
+    this.resetGame();
+    this.highScore = 0;
+  }
+//Initialisiert das Board
+  initBoard() {
+    this.ctx = this.canvas.nativeElement.getContext('2d');
+
+    // Rechnet die Block grössen aus
+    this.ctx.canvas.width = COLS * BLOCK_SIZE;
+    this.ctx.canvas.height = ROWS * BLOCK_SIZE;
+
+    //Skaliert die alle Objekte
+    this.ctx.scale(BLOCK_SIZE, BLOCK_SIZE);
+  }
+
+  initNext() {
+    this.ctxNext = this.canvasNext.nativeElement.getContext('2d');
+
+    // Grösse von nächsten Blöcken ausrechnen
+    this.ctxNext.canvas.width = 4 * BLOCK_SIZE + 2;
+    this.ctxNext.canvas.height = 4 * BLOCK_SIZE;
+
+    this.ctxNext.scale(BLOCK_SIZE, BLOCK_SIZE);
+  }
+  //Button um das spiel zu starten
+  play() {
+    this.gameStarted = true;
+    this.resetGame();
+    this.next = new Tetromino(this.ctx);
+    this.piece = new Tetromino(this.ctx);
+    this.next.drawNext(this.ctxNext);
+    this.time.start = performance.now();
+
+    // Bei gleicher Request ID Animation abbrechen
+    if (this.requestId) {
+      cancelAnimationFrame(this.requestId);
     }
 
+    this.animate();
+  }
 
-    draw() {
-      this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
-      this.piece.draw();
-      this.drawBoard();
+  // Spiel zurücksetzen
+  resetGame() {
+    this.points = 0;
+    this.lines = 0;
+    this.level = 0;
+    this.board = this.getEmptyBoard();
+    this.time = { start: 0, elapsed: 0, level: LEVEL[this.level] };
+    this.paused = false;
+  }
+  
+  //Animationsloop der dropbewegung
+  animate(now = 0) {
+    this.time.elapsed = now - this.time.start;
+    if (this.time.elapsed > this.time.level) {
+      this.time.start = now;
+      if (!this.drop()) {
+        this.gameOver();
+        return;
+      }
     }
+    this.draw();
+    this.requestId = requestAnimationFrame(this.animate.bind(this));
+  }
 
-    drawBoard() {
-      this.board.forEach((row, y) => {
-        row.forEach((value, x) => {
-          if (value > 0) {
-            this.ctx.fillStyle = FARBEN[value];
-            this.ctx.fillRect(x, y, 1, 1);
-          }
-        });
+  //Zeichnen der Blöcke
+  draw() {
+    this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+    this.piece.draw();
+    this.drawBoard();
+  }
+
+  //Zeichnen des Boardes
+  drawBoard() {
+    this.board.forEach((row, y) => {
+      row.forEach((value, x) => {
+        if (value > 0) {
+          this.ctx.fillStyle = FARBEN[value];
+          this.ctx.fillRect(x, y, 1, 1);
+        }
       });
+    });
+  }
+
+  //Abwärts bewegung
+  drop(): boolean {
+    let p = this.moves[KEYS.DOWN](this.piece);
+    if (this.edge.valid(p, this.board)) {
+      this.piece.move(p);
+    } else {
+      this.freeze();
+      this.clearLines();
+      if (this.piece.y === 0) {
+        // Spiel beenden falls "Dach" erreicht
+        return false;
+      }
+      this.piece = this.next;
+      this.next = new Tetromino(this.ctx);
+      this.next.drawNext(this.ctxNext);
     }
-
-
-    //Initialisiert das Board
-    initBoard() {
-      this.ctx = this.canvas.nativeElement.getContext('2d');
-      this.ctx.canvas.width = COLS * BLOCK_SIZE;
-      this.ctx.canvas.height = ROWS * BLOCK_SIZE;
-
-      //Skaliert die alle Objekte
-      this.ctx.scale(BLOCK_SIZE, BLOCK_SIZE)
+    return true;
+  }
+  
+  //Bei 10 Blöcken neben einander die Linie Löschen und den Score erhöhen
+  clearLines() {
+    let lines = 0;
+    this.board.forEach((row, y) => {
+      if (row.every(value => value !== 0)) {
+        lines++;
+        this.board.splice(y, 1);
+        this.board.unshift(Array(COLS).fill(0));
+      }
+    });
+    if (lines > 0) {
+      this.points += this.edge.getLinesClearedPoints(lines, this.level);
+      this.lines += lines;
+      if (this.lines >= LINES_PER_LEVEL) {
+        this.level++;
+        this.lines -= LINES_PER_LEVEL;
+        this.time.level = LEVEL[this.level];
+      }
     }
+  }
 
-    getEmptyBoard(): number[][] {
-      return Array.from({ length: ROWS }, () => Array(COLS).fill(0));
-    }
+// Block einfrieren wenn unten angekommen
+  freeze() {
+    this.piece.shape.forEach((row, y) => {
+      row.forEach((value, x) => {
+        if (value > 0) {
+          this.board[y + this.piece.y][x + this.piece.x] = value;
+        }
+      });
+    });
+  }
 
-    //Button um das spiel zu starten
-    play() {
+  // Spiel Verloren
+  gameOver() {
+    this.gameStarted = false;
+    cancelAnimationFrame(this.requestId);
+    this.ctx.fillStyle = 'black';
+    this.ctx.fillRect(1, 3, 8, 1.2);
+    this.ctx.font = '1px Arial';
+    this.ctx.fillStyle = 'red';
+    this.ctx.fillText('GAME OVER', 1.8, 4);
+  }
 
-
-      //Ruft das Board auf
-      this.board = this.getEmptyBoard();
-      console.table(this.board);
-
-      //Ruft das Formen objekt auf
-      this.piece = new Piece(this.ctx);
-      //this.piece.draw();
-      this.animate();
-
-    }
-
-
+  // Leeres Matrix board erstellen
+  getEmptyBoard(): number[][] {
+    return Array.from({ length: ROWS }, () => Array(COLS).fill(0));
+  }
 }

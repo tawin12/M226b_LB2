@@ -6,10 +6,16 @@
   },
   "files": [
     "src/main.ts",
-    "src/polyfills.ts"
+    "src/polyfills.ts",
+    "src/app/board/board.component.ts",
+    "src/app/board/constants.ts",
+    "src/app/board/edge.service.ts",
+    "src/app/board/rotate.service.ts",
+    "src/app/board/tetromis.component.ts"
   ],
   "include": [
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "src/app/**/*.ts"
   ],
   "exclude": [
     "src/test.ts",

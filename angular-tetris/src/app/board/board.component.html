@@ -8,8 +8,11 @@
         <p>Score: {{ points }}</p>
         <p>Lines: {{ lines }}</p>
         <p>Level: {{ level }}</p>
+        <canvas #next class="next"></canvas>
       </div>
-      <button (click)="play()" class="play-button">Play</button>
+      <button (click)="play()" class="btn">Play</button>
+      <button (click)="gameOver()" routerLink="" routerLinkActive="active" class="btn" *ngIf="gameStarted">beenden</button>
     </div>
   </div>
+  
   
