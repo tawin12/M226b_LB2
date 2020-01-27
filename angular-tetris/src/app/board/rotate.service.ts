@@ -2,10 +2,15 @@ import { Injectable } from '@angular/core';
 import { ITetromino } from './tetromis.component';
 import { COLS, ROWS, PUNKTE } from './constants';
 
+/**
+ *
+ * klasse ermöglicht als Service, dass Rotieren der Blöcke.
+ * @export
+ * @class TetromisRotation
+ */
 @Injectable({
     providedIn: 'root'
   })
-  //klasse ermöglicht als Service, dass Rotieren der Blöcke.
   export class TetromisRotation {
 
     rotate(piece: ITetromino): ITetromino {

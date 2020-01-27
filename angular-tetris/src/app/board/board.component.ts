@@ -6,7 +6,7 @@ import {TetromisRotation} from './rotate.service';
 
 /**
  *
- *
+ * Component für das Spielfeld
  * @export
  * @class BoardComponent
  * @implements {OnInit}
@@ -44,7 +44,7 @@ export class BoardComponent implements OnInit {
 
   /**
    *
-   *
+   * Pfeiltasten Steuerung für die Blöcke.
    * @param {KeyboardEvent} event
    * @memberof BoardComponent
    */
@@ -73,7 +73,7 @@ export class BoardComponent implements OnInit {
   }
 
   /**
-   *Creates an instance of BoardComponent.
+   *Erstellt eine instanz von BoardComponent.
    * @param {IsOnEdge} edge
    * @param {TetromisRotation} rotate
    * @memberof BoardComponent
@@ -82,7 +82,7 @@ export class BoardComponent implements OnInit {
 
   /**
    *
-   *
+   * Ruft methoden bei Initialisierung auf.
    * @memberof BoardComponent
    */
   ngOnInit() {
@@ -91,7 +91,11 @@ export class BoardComponent implements OnInit {
     this.resetGame();
     this.highScore = 0;
   }
-//Initialisiert das Board
+  /**
+   * Initialisiert das Board
+   *
+   * @memberof BoardComponent
+   */
   initBoard() {
     this.ctx = this.canvas.nativeElement.getContext('2d');
 
@@ -103,6 +107,11 @@ export class BoardComponent implements OnInit {
     this.ctx.scale(BLOCK_SIZE, BLOCK_SIZE);
   }
 
+  /**
+   * Initialisiert den nächsten Block
+   *
+   * @memberof BoardComponent
+   */
   initNext() {
     this.ctxNext = this.canvasNext.nativeElement.getContext('2d');
 
@@ -112,7 +121,13 @@ export class BoardComponent implements OnInit {
 
     this.ctxNext.scale(BLOCK_SIZE, BLOCK_SIZE);
   }
-  //Button um das spiel zu starten
+  
+  /**
+   *Button um das spiel zu starten
+   *
+   * @memberof BoardComponent
+   */
+
   play() {
     this.gameStarted = true;
     this.resetGame();
@@ -125,11 +140,15 @@ export class BoardComponent implements OnInit {
     if (this.requestId) {
       cancelAnimationFrame(this.requestId);
     }
-
+    //Animiert die Blöcke
     this.animate();
   }
 
-  // Spiel zurücksetzen
+  /**
+   *Spiel zurücksetzen
+   *
+   * @memberof BoardComponent
+   */
   resetGame() {
     this.points = 0;
     this.lines = 0;
@@ -139,7 +158,13 @@ export class BoardComponent implements OnInit {
     this.paused = false;
   }
   
-  //Animationsloop der dropbewegung
+  /**
+   *
+   *Animationsloop der dropbewegung
+   * @param {number} [now=0]
+   * @returns
+   * @memberof BoardComponent
+   */
   animate(now = 0) {
     this.time.elapsed = now - this.time.start;
     if (this.time.elapsed > this.time.level) {
@@ -153,14 +178,22 @@ export class BoardComponent implements OnInit {
     this.requestId = requestAnimationFrame(this.animate.bind(this));
   }
 
-  //Zeichnen der Blöcke
+  /**
+   * Zeichnen der Blöcke
+   *
+   * @memberof BoardComponent
+   */
   draw() {
     this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
     this.piece.draw();
     this.drawBoard();
   }
 
-  //Zeichnen des Boardes
+  /**
+   *Zeichnen des Boardes
+   *
+   * @memberof BoardComponent
+   */
   drawBoard() {
     this.board.forEach((row, y) => {
       row.forEach((value, x) => {
@@ -172,7 +205,12 @@ export class BoardComponent implements OnInit {
     });
   }
 
-  //Abwärts bewegung
+  /**
+   *
+   * Abwärts bewegung
+   * @returns {boolean}
+   * @memberof BoardComponent
+   */
   drop(): boolean {
     let p = this.moves[KEYS.DOWN](this.piece);
     if (this.edge.valid(p, this.board)) {
@@ -191,7 +229,11 @@ export class BoardComponent implements OnInit {
     return true;
   }
   
-  //Bei 10 Blöcken neben einander die Linie Löschen und den Score erhöhen
+  /**
+   *
+   *Bei 10 Blöcken neben einander die Linie Löschen und den Score erhöhen
+   * @memberof BoardComponent
+   */
   clearLines() {
     let lines = 0;
     this.board.forEach((row, y) => {
@@ -212,7 +254,11 @@ export class BoardComponent implements OnInit {
     }
   }
 
-// Block einfrieren wenn unten angekommen
+  /**
+   *
+   * Block einfrieren wenn unten angekommen
+   * @memberof BoardComponent
+   */
   freeze() {
     this.piece.shape.forEach((row, y) => {
       row.forEach((value, x) => {
@@ -223,7 +269,11 @@ export class BoardComponent implements OnInit {
     });
   }
 
-  // Spiel Verloren
+  /**
+   *
+   * Spiel Verloren.
+   * @memberof BoardComponent
+   */
   gameOver() {
     this.gameStarted = false;
     cancelAnimationFrame(this.requestId);
@@ -233,8 +283,13 @@ export class BoardComponent implements OnInit {
     this.ctx.fillStyle = 'red';
     this.ctx.fillText('GAME OVER', 1.8, 4);
   }
-
-  // Leeres Matrix board erstellen
+  
+  /**
+   *
+   * Leeres Matrix board erstellen
+   * @returns {number[][]}
+   * @memberof BoardComponent
+   */
   getEmptyBoard(): number[][] {
     return Array.from({ length: ROWS }, () => Array(COLS).fill(0));
   }
