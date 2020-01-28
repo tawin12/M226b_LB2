@@ -59,8 +59,20 @@
             <code>src/app/board/edge.service.ts</code>
         </p>
 
+            <p class="comment">
+                <h3>Description</h3>
+            </p>
+            <p class="comment">
+                <p>Klasse validiert das sich der Block an einem legalen ort bewegt.</p>
+
+            </p>
 
 
+            <p class="comment">
+                <h3>Example</h3>
+            </p>
+            <div class="io-description">
+            </div>
 
             <section>
     <h3 id="index">Index</h3>
@@ -133,14 +145,16 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="33"
-                            class="link-to-prism">src/app/board/edge.service.ts:33</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="58"
+                            class="link-to-prism">src/app/board/edge.service.ts:58</a></div>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
+                    <div class="io-description"><p>Methode über dem Boden</p>
+</div>
 
                     <div class="io-description">
                         <b>Parameters :</b>
@@ -203,14 +217,16 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="42"
-                            class="link-to-prism">src/app/board/edge.service.ts:42</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="81"
+                            class="link-to-prism">src/app/board/edge.service.ts:81</a></div>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
+                    <div class="io-description"><p>Score erhöhen</p>
+</div>
 
                     <div class="io-description">
                         <b>Parameters :</b>
@@ -285,14 +301,16 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="29"
-                            class="link-to-prism">src/app/board/edge.service.ts:29</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="48"
+                            class="link-to-prism">src/app/board/edge.service.ts:48</a></div>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
+                    <div class="io-description"><p>Methode in einer Wand</p>
+</div>
 
                     <div class="io-description">
                         <b>Parameters :</b>
@@ -355,14 +373,16 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="25"
-                            class="link-to-prism">src/app/board/edge.service.ts:25</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="37"
+                            class="link-to-prism">src/app/board/edge.service.ts:37</a></div>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
+                    <div class="io-description"><p>Methode leere Felder finden</p>
+</div>
 
                     <div class="io-description">
                         <b>Parameters :</b>
@@ -425,14 +445,16 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="37"
-                            class="link-to-prism">src/app/board/edge.service.ts:37</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="70"
+                            class="link-to-prism">src/app/board/edge.service.ts:70</a></div>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
+                    <div class="io-description"><p>Standort nicht besetzt</p>
+</div>
 
                     <div class="io-description">
                         <b>Parameters :</b>
@@ -519,8 +541,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="10"
-                            class="link-to-prism">src/app/board/edge.service.ts:10</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="15"
+                            class="link-to-prism">src/app/board/edge.service.ts:15</a></div>
                 </td>
             </tr>
 
@@ -589,10 +611,15 @@
 import { ITetromino } from &#x27;./tetromis.component&#x27;;
 import { COLS, ROWS, PUNKTE } from &#x27;./constants&#x27;;
 
+/**
+ *
+ *Klasse validiert das sich der Block an einem legalen ort bewegt.
+ * @export
+ * @class IsOnEdge
+ */
 @Injectable({
   providedIn: &#x27;root&#x27;
 })
-//Klasse validiert das sich der Block an einem legalen ort bewegt.
 export class IsOnEdge {
   valid(p: ITetromino, board: number[][]): boolean {
     return p.shape.every((row, dy) &#x3D;&gt; {
@@ -609,23 +636,57 @@ export class IsOnEdge {
     });
   }
 
+  /**
+   *
+   * Methode leere Felder finden
+   * @param {number} value
+   * @returns {boolean}
+   * @memberof IsOnEdge
+   */
   isEmpty(value: number): boolean {
     return value &#x3D;&#x3D;&#x3D; 0;
   }
-//Hilfsmethode in einer Wand
+
+  /**
+   *
+   *Methode in einer Wand
+   * @param {number} x
+   * @returns {boolean}
+   * @memberof IsOnEdge
+   */
   insideWalls(x: number): boolean {
     return x &gt;&#x3D; 0 &amp;&amp; x &lt; COLS;
   }
- //Hilfsmethode über dem Boden
+  /**
+   *
+   *Methode über dem Boden
+   * @param {number} y
+   * @returns {boolean}
+   * @memberof IsOnEdge
+   */
   aboveFloor(y: number): boolean {
     return y &lt;&#x3D; ROWS;
   }
-  //Standort nicht besetzt
+  /**
+   *
+   *Standort nicht besetzt
+   * @param {number[][]} board
+   * @param {number} x
+   * @param {number} y
+   * @returns {boolean}
+   * @memberof IsOnEdge
+   */
   notOccupied(board: number[][], x: number, y: number): boolean {
     return board[y] &amp;&amp; board[y][x] &#x3D;&#x3D;&#x3D; 0;
   }
-
-  //Score erhöhen
+  /**
+   *
+   *Score erhöhen
+   * @param {number} lines
+   * @param {number} level
+   * @returns {number}
+   * @memberof IsOnEdge
+   */
   getLinesClearedPoints(lines: number, level: number): number {
     const lineClearPoints &#x3D;
       lines &#x3D;&#x3D;&#x3D; 1

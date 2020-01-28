@@ -54,7 +54,7 @@ export class BoardComponent implements OnInit {
       this.gameOver();
     } else if (this.moves[event.keyCode]) {
       event.preventDefault();
-      // Get new state
+      // Neuer Event abhollen
       let p = this.moves[event.keyCode](this.piece);
       if (event.keyCode === KEYS.SPACE) {
         // Hard drop

@@ -59,8 +59,20 @@
             <code>src/app/board/rotate.service.ts</code>
         </p>
 
+            <p class="comment">
+                <h3>Description</h3>
+            </p>
+            <p class="comment">
+                <p>klasse ermöglicht als Service, dass Rotieren der Blöcke.</p>
+
+            </p>
 
 
+            <p class="comment">
+                <h3>Example</h3>
+            </p>
+            <div class="io-description">
+            </div>
 
             <section>
     <h3 id="index">Index</h3>
@@ -118,8 +130,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="11"
-                            class="link-to-prism">src/app/board/rotate.service.ts:11</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="16"
+                            class="link-to-prism">src/app/board/rotate.service.ts:16</a></div>
                 </td>
             </tr>
 
@@ -176,10 +188,15 @@
 import { ITetromino } from &#x27;./tetromis.component&#x27;;
 import { COLS, ROWS, PUNKTE } from &#x27;./constants&#x27;;
 
+/**
+ *
+ * klasse ermöglicht als Service, dass Rotieren der Blöcke.
+ * @export
+ * @class TetromisRotation
+ */
 @Injectable({
     providedIn: &#x27;root&#x27;
   })
-  //klasse ermöglicht als Service, dass Rotieren der Blöcke.
   export class TetromisRotation {
 
     rotate(piece: ITetromino): ITetromino {
